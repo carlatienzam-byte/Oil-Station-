@@ -10,7 +10,7 @@
   <!-- ══ COMPONENTES — ANTES DE <a-scene> ══ -->
   <script>
     var JOY_R     = 37;
-    var SPEED     = 0.125;
+    var SPEED     = 0.2;
     var joyActive = false;
     var joyDx = 0, joyDy = 0;
 
@@ -42,6 +42,23 @@
   </script>
 
   <style>
+	  
+	     /* Botones subir/bajar */
+    #vert-btns {
+      position: fixed; bottom: 28px; right: 108px;
+      display: flex; flex-direction: column; gap: 8px;
+      z-index: 9999;
+    }
+    .vert-btn {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      border: 2px solid rgba(255,255,255,0.5);
+      color: #fff; font-size: 22px;
+      display: flex; align-items: center; justify-content: center;
+      touch-action: manipulation; user-select: none; cursor: pointer;
+    }
+    .vert-btn:active { background: rgba(255,255,255,0.35); }
+	  
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { overflow: hidden; }
 
@@ -97,6 +114,12 @@
   </style>
 </head>
 <body>
+	
+	  <!-- BOTONES SUBIR / BAJAR -->
+  <div id="vert-btns">
+    <div class="vert-btn" id="btn-up">▲</div>
+    <div class="vert-btn" id="btn-down">▼</div>
+  </div>
 
   <!-- JOYSTICK -->
   <div id="joy-zone">
@@ -159,16 +182,15 @@
 
     <!-- PORTAL -->
     <a-link id="miEnlace1"
-      href="https://carlatienzam-byte.github.io/Movil-Prueba/"
+      href="https://carlatienzam-byte.github.io/EPE-IESCarmen-de-Burgos-Segui/"
       title="Backrooms"
-      image="backrooms.jpg"
       position="19.26834 1.027 13.99184"
       scale="0.5 0.5 0.5"
       geometry="primitive: circle; segments: 64"
       material="shader: portal; side: double; previewDistance: 7.5"
       rotation="0 90 0"
       class="portal"
-      data-url="https://carlatienzam-byte.github.io/Movil-Prueba/">
+      data-url="https://carlatienzam-byte.github.io/EPE-IESCarmen-de-Burgos-Segui/">
       <a-entity text="align: center; color: white; font: kelsonsans; value: Backrooms; width: 5"
                 position="0 1.5 0" rotation="0 180 0"></a-entity>
     </a-link>
@@ -187,6 +209,17 @@
   </a-scene>
 
   <script>
+	  
+	     /* ── BOTONES SUBIR / BAJAR ── */
+    ['up','down'].forEach(function(dir) {
+      var btn = document.getElementById('btn-' + dir);
+      var val = dir === 'up' ? 1 : -1;
+      btn.addEventListener('touchstart', function(e) { e.preventDefault(); vertDir = val; }, { passive: false });
+      btn.addEventListener('touchend',   function(e) { e.preventDefault(); vertDir = 0;   }, { passive: false });
+      btn.addEventListener('mousedown',  function()  { vertDir = val; });
+      btn.addEventListener('mouseup',    function()  { vertDir = 0; });
+    });
+	  
     /* ── JOYSTICK ── */
     var joyBase  = document.getElementById('joy-base');
     var joyThumb = document.getElementById('joy-thumb');
