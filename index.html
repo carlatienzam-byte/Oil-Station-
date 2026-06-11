@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!Doctype html>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -6,37 +6,45 @@
   <title>Documento</title>
   <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
   <script src="https://unpkg.com/aframe-event-set-component@5.x.x/dist/aframe-event-set-component.min.js"></script>
-
-  <!-- ══ COMPONENTES — ANTES DE <a-scene> ══ -->
+ <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.7.0/dist/aframe-extras.min.js"></script>
+ 
+	
+	<!-- ══ COMPONENTES — ANTES DE <a-scene> ══ -->
   <script>
     var JOY_R     = 37;
-    var SPEED     = 0.2;
+    var SPEED     = 0.225;
     var joyActive = false;
     var joyDx = 0, joyDy = 0;
+	  
+	    var vertDir = 0; /* -1 bajar, 0 quieto, +1 subir */
 
-    AFRAME.registerComponent('mobile-movement', {
+     AFRAME.registerComponent('mobile-movement', {
       tick: function () {
-        if (!joyActive) return;
         var nx = joyDx / JOY_R;
         var ny = joyDy / JOY_R;
-        if (Math.abs(nx) < 0.05 && Math.abs(ny) < 0.05) return;
+        var moving = joyActive && (Math.abs(nx) > 0.05 || Math.abs(ny) > 0.05);
 
         var camEl = this.el.querySelector('[camera]');
         if (!camEl) return;
 
-        var euler = new THREE.Euler();
-        euler.setFromQuaternion(
-          camEl.object3D.getWorldQuaternion(new THREE.Quaternion()), 'YXZ'
-        );
-        var angle = euler.y;
-        var sinA  = Math.sin(angle);
-        var cosA  = Math.cos(angle);
+        if (moving) {
+          var euler = new THREE.Euler();
+          euler.setFromQuaternion(
+            camEl.object3D.getWorldQuaternion(new THREE.Quaternion()), 'YXZ'
+          );
+          var angle = euler.y;
+          var sinA  = Math.sin(angle);
+          var cosA  = Math.cos(angle);
+          var pos = this.el.object3D.position;
+          pos.x += sinA * (-ny) * SPEED;
+          pos.z += cosA * (-ny) * SPEED;
+          pos.x += cosA * nx * SPEED;
+          pos.z += (-sinA) * nx * SPEED;
+        }
 
-        var pos = this.el.object3D.position;
-        pos.x += sinA * (-ny) * SPEED;
-        pos.z += cosA * (-ny) * SPEED;
-        pos.x += cosA * nx * SPEED;
-        pos.z += (-sinA) * nx * SPEED;
+        if (vertDir !== 0) {
+          camEl.object3D.position.y += vertDir * SPEED;
+        }
       }
     });
   </script>
@@ -182,7 +190,7 @@
 
     <!-- PORTAL -->
     <a-link id="miEnlace1"
-      href="https://carlatienzam-byte.github.io/EPE-IESCarmen-de-Burgos-Segui/"
+      href="https://carlatienzam-byte.github.io/Movil-Prueba/"
       title="Backrooms"
       position="19.26834 1.027 13.99184"
       scale="0.5 0.5 0.5"
@@ -190,7 +198,7 @@
       material="shader: portal; side: double; previewDistance: 7.5"
       rotation="0 90 0"
       class="portal"
-      data-url="https://carlatienzam-byte.github.io/EPE-IESCarmen-de-Burgos-Segui/">
+      data-url="https://carlatienzam-byte.github.io/Movil-Prueba/">
       <a-entity text="align: center; color: white; font: kelsonsans; value: Backrooms; width: 5"
                 position="0 1.5 0" rotation="0 180 0"></a-entity>
     </a-link>
