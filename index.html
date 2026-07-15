@@ -167,9 +167,9 @@
       <a-sound id="Camion1"  src="camion.mp3"></a-sound>
     </a-assets>
 
-    <a-gltf-model id="Mazda"      src="low_poly_mazda_mx-5_miata_na_update_opt.glb" rotation="0 -90 0" position="-5 0 2"     scale="1 1 1" sound="src: #Rotativo; on: mouseenter"></a-gltf-model>
+    <a-gltf-model id="Mazda"      src="low_poly_mazda_mx-5_miata_na_update_opt.glb" rotation="0 -90 0" position="-5 0 2"     scale="1 1 1" sound="src: #Rotativo; on: mouseenter; volume: 5"></a-gltf-model>
     <a-gltf-model id="Gasolinera" src="retro-futuristic_gas_station_opt.glb"         position="0 0 0"   scale="1 1 1"></a-gltf-model>
-    <a-gltf-model id="Camion"     src="truck_opt.glb"                                rotation="0 -20 0" position="-29 2.3 20" scale="1 1 1" sound="src: #Camion1; on: mouseenter"></a-gltf-model>
+    <a-gltf-model id="Camion"     src="truck_opt.glb"                                rotation="0 -20 0" position="-29 2.3 20" scale="1 1 1" sound="src: #Camion1; on: mouseenter; volume: 5"></a-gltf-model>
     <a-gltf-model id="Sol1"       src="Sol_opt.glb"                                  position="-120 200 160" scale="0.5 0.5 0.5"></a-gltf-model>
     <a-gltf-model id="Cielo"      src="cielo_opt.glb"                                position="0 0 0"   scale="300 300 300"></a-gltf-model>
 
@@ -321,6 +321,7 @@
        No afecta al volumen de los demás sonidos (surtidor/camión). */
     var cilindroMusica = document.getElementById('botonMusica');
     var bgmCilindro = document.getElementById('bgm-cilindro');
+    if (bgmCilindro) bgmCilindro.volume = 0.8;
     if (cilindroMusica && bgmCilindro) {
       cilindroMusica.addEventListener('mouseenter', function () {
         if (!bgmCilindro.paused) return; // ya está sonando, no reiniciar
