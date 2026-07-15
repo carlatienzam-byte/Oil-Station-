@@ -154,8 +154,13 @@
   <!-- TOAST -->
   <div id="toast"></div>
 
+  <!-- MÚSICA DEL CILINDRO — audio HTML5 en streaming (no decodeAudioData),
+       se activa/desactiva junto con el cambio de color rojo/verde. -->
+  <audio id="bgm-cilindro" src="kavinsky.mp3" loop preload="auto"></audio>
+
   <!-- ══════════ ESCENA A-FRAME ══════════ -->
-  <a-scene vr-mode-ui="enabled: true">
+  <a-scene vr-mode-ui="enabled: true"
+    gltf-model="dracoDecoderPath: https://www.gstatic.com/draco/versioned/decoders/1.5.7/">
 
     <a-assets>
       <a-sound id="Rotativo" src="rotativo.mp3"></a-sound>
@@ -168,7 +173,7 @@
     <a-gltf-model id="Sol1"       src="Sol_opt.glb"                                  position="-120 200 160" scale="0.5 0.5 0.5"></a-gltf-model>
     <a-gltf-model id="Cielo"      src="cielo_opt.glb"                                position="0 0 0"   scale="300 300 300"></a-gltf-model>
 
-    <a-cylinder color="red" position="0 1 4.34" scale="0.2 0.2 0.2"
+    <a-cylinder id="botonMusica" color="red" position="0 1 4.34" scale="0.2 0.2 0.2"
       event-set__enter="_event: mouseenter; color: green"
       event-set__leave="_event: mouseleave; color: red">
     </a-cylinder>
@@ -310,10 +315,40 @@
       activatePortal(getPortalAtCenter());
     });
 
-    /* ── CLICK EN PORTALES (desktop) ── */
-    var el1 = document.getElementById('miEnlace1');
-    if (el1) el1.addEventListener('click', function() {
-      window.location.href = el1.dataset.url;
+    /* ── MÚSICA DEL CILINDRO ──
+       Se activa la primera vez que se apunta al cilindro (se pone verde) y
+       sigue sonando en bucle indefinidamente, aunque deje de estar activo.
+       No afecta al volumen de los demás sonidos (surtidor/camión). */
+    var cilindroMusica = document.getElementById('botonMusica');
+    var bgmCilindro = document.getElementById('bgm-cilindro');
+    if (cilindroMusica && bgmCilindro) {
+      cilindroMusica.addEventListener('mouseenter', function () {
+        if (!bgmCilindro.paused) return; // ya está sonando, no reiniciar
+        var playPromise = bgmCilindro.play();
+        if (playPromise && playPromise.catch) {
+          playPromise.catch(function (e) {
+            console.warn('No se pudo iniciar la música del cilindro:', e);
+            showToast('Audio bloqueado: ' + (e && e.name ? e.name : 'toca la pantalla primero'));
+          });
+        }
+      });
+      bgmCilindro.addEventListener('error', function () {
+        var err = bgmCilindro.error;
+        showToast(err ? ('Error audio (código ' + err.code + ')') : 'Error audio desconocido');
+        console.error('Audio error:', err);
+      });
+    }
+
+    /* ── CLICK EN PORTALES: BLOQUEADO A PROPÓSITO ──
+       Solo se puede entrar a un portal pulsando el botón "ENTRAR PORTAL".
+       Interceptamos el clic en fase de captura (antes de que el componente
+       'link' interno de A-Frame procese su navegación automática) y lo
+       detenemos por completo. */
+    document.querySelectorAll('.portal').forEach(function(el) {
+      el.addEventListener('click', function(e) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+      }, true);
     });
 
     /* ── DESBLOQUEO DE AUDIO EN MÓVIL ── */
